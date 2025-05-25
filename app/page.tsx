@@ -67,9 +67,9 @@ export default function HomePage() {
               Commencer gratuitement
             </Button>
           </Link>
-          <Button size="lg" variant="outline" className="border-blue-600 text-blue-600 hover:bg-blue-50">
+          {/* <Button size="lg" variant="outline" className="border-blue-600 text-blue-600 hover:bg-blue-50">
             Voir la démo
-          </Button>
+          </Button> */}
         </div>
 
         <div className="bg-white rounded-2xl shadow-xl p-8 max-w-2xl mx-auto">
