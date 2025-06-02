@@ -37,7 +37,7 @@ export default function HomePage() {
             <Link href="/auth/login">
               <Button variant="outline">Se connecter</Button>
             </Link>
-            <Link href="/pricing">
+            <Link href="/pricing" className="hidden">
               <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
                 Je m'abonne
               </Button>
