@@ -37,9 +37,9 @@ export default function HomePage() {
             <Link href="/auth/login">
               <Button variant="outline">Se connecter</Button>
             </Link>
-            <Link href="/auth/register">
+            <Link href="/pricing">
               <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
-                Commencer maintenant
+                Je m'abonne
               </Button>
             </Link>
           </div>
@@ -58,13 +58,13 @@ export default function HomePage() {
           <span className="font-semibold text-blue-600">Facebook</span>, qui automatise vos ventes de A à Z.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-          <Link href="/auth/register">
+          <Link href="/pricing">
             <Button
               size="lg"
               className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
             >
               <Play className="w-5 h-5 mr-2" />
-              Commencer gratuitement
+              Je m'abonne
             </Button>
           </Link>
           {/* <Button size="lg" variant="outline" className="border-blue-600 text-blue-600 hover:bg-blue-50">
@@ -285,15 +285,12 @@ export default function HomePage() {
             Rejoignez des milliers d'entrepreneurs qui font confiance à ShopMate
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/auth/register">
+            <Link href="/pricing">
               <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100">
                 <ArrowRight className="w-5 h-5 mr-2" />
-                Commencer gratuitement
+                Je m'abonne
               </Button>
             </Link>
-            <Button size="lg" className="border-white text-white hover:text-blue-600">
-              Planifier une démo
-            </Button>
           </div>
         </div>
       </section>

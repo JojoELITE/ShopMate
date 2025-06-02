@@ -11,9 +11,112 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
-import { User, Bell, Shield, CreditCard, Palette, Globe, Camera, Save, Eye, EyeOff } from "lucide-react"
+import { User, Bell, Shield, CreditCard, Palette, Globe, Camera, Save, Eye, EyeOff, X } from "lucide-react"
+
+interface SubscriptionPlansModalProps {
+  onClose: () => void;
+  currentPlan: string;
+}
+
+const SubscriptionPlansModal = ({ onClose, currentPlan }: SubscriptionPlansModalProps) => {
+  const plans = [
+    {
+      id: 'basic',
+      name: 'Basique',
+      price: '9 900',
+      period: 'mois',
+      description: 'Parfait pour les petits commerces',
+      features: ['Jusqu\'à 50 produits', 'Ventes en ligne', 'Rapports de base'],
+      isCurrent: currentPlan === 'basic'
+    },
+    {
+      id: 'pro',
+      name: 'Pro',
+      price: '25 000',
+      period: 'mois',
+      description: 'Pour les boutiques en pleine croissance',
+      features: ['Produits illimités', 'Ventes en ligne', 'Rapports avancés', 'Support prioritaire'],
+      isCurrent: currentPlan === 'pro'
+    },
+    {
+      id: 'enterprise',
+      name: 'Entreprise',
+      price: '49 900',
+      period: 'mois',
+      description: 'Solution complète pour les entreprises',
+      features: ['Tout inclus dans Pro', 'Multi-utilisateurs', 'API complète', 'Support 24/7'],
+      isCurrent: currentPlan === 'enterprise'
+    }
+  ];
+
+  return (
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+      <div className="bg-white rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="p-6 border-b">
+          <div className="flex justify-between items-center">
+            <h2 className="text-2xl font-bold">Changer d'abonnement</h2>
+            <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
+              <X className="w-6 h-6" />
+            </button>
+          </div>
+        </div>
+        
+        <div className="p-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {plans.map((plan) => (
+              <div 
+                key={plan.id}
+                className={`border rounded-xl p-6 relative ${
+                  plan.isCurrent 
+                    ? 'ring-2 ring-blue-500 border-blue-500' 
+                    : 'hover:border-blue-300 hover:shadow-lg'
+                } transition-all`}
+              >
+                {plan.isCurrent && (
+                  <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                    <span className="bg-blue-500 text-white text-xs font-medium px-3 py-1 rounded-full">
+                      Votre forfait
+                    </span>
+                  </div>
+                )}
+                <h3 className="text-xl font-bold text-center mb-2">{plan.name}</h3>
+                <p className="text-gray-600 text-center mb-6">{plan.description}</p>
+                <div className="text-center mb-6">
+                  <span className="text-3xl font-bold">{plan.price} FCFA</span>
+                  <span className="text-gray-500">/{plan.period}</span>
+                </div>
+                <ul className="space-y-3 mb-6">
+                  {plan.features.map((feature, index) => (
+                    <li key={index} className="flex items-center">
+                      <svg className="h-5 w-5 text-green-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                      </svg>
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+                <Button 
+                  className={`w-full ${
+                    plan.isCurrent 
+                      ? 'bg-gray-100 text-gray-700 hover:bg-gray-200' 
+                      : 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700'
+                  }`}
+                  disabled={plan.isCurrent}
+                >
+                  {plan.isCurrent ? 'Forfait actuel' : 'Changer pour ce forfait'}
+                </Button>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export default function SettingsPage() {
+  const [showSubscriptionPlans, setShowSubscriptionPlans] = useState(false);
+  const [currentPlan, setCurrentPlan] = useState('pro');
   const [notifications, setNotifications] = useState({
     email: true,
     sms: false,
@@ -49,6 +152,7 @@ export default function SettingsPage() {
                 { icon: User, label: "Profil", id: "profile" },
                 { icon: Bell, label: "Notifications", id: "notifications" },
                 { icon: Shield, label: "Sécurité", id: "security" },
+                { icon: CreditCard, label: "Abonnement", id: "subscription" },
                 { icon: CreditCard, label: "Facturation", id: "billing" },
                 { icon: Palette, label: "Apparence", id: "appearance" },
                 { icon: Globe, label: "Langue & Région", id: "locale" },
@@ -247,6 +351,77 @@ export default function SettingsPage() {
             </CardContent>
           </Card>
 
+          {/* Abonnement */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <CreditCard className="w-5 h-5 mr-2" />
+                Votre abonnement
+              </CardTitle>
+              <CardDescription>Gérez votre formule d'abonnement actuelle</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="rounded-lg border bg-gradient-to-r from-blue-50 to-purple-50 p-6">
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900">Pro</h3>
+                    <p className="text-gray-600">Formule complète avec toutes les fonctionnalités</p>
+                  </div>
+                  <div className="mt-4 md:mt-0 text-right">
+                    <div className="text-2xl font-bold text-gray-900">25 000 FCFA<span className="text-sm font-normal text-gray-500">/mois</span></div>
+                    <div className="text-sm text-green-600 font-medium">Actif</div>
+                  </div>
+                </div>
+
+                <div className="mt-6 pt-6 border-t border-gray-200">
+                  <h4 className="font-medium text-gray-900 mb-3">Fonctionnalités incluses :</h4>
+                  <ul className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-gray-600">
+                    <li className="flex items-center">
+                      <svg className="h-5 w-5 text-green-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                      Produits illimités
+                    </li>
+                    <li className="flex items-center">
+                      <svg className="h-5 w-5 text-green-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                      Ventes en ligne
+                    </li>
+                    <li className="flex items-center">
+                      <svg className="h-5 w-5 text-green-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                      Rapports avancés
+                    </li>
+                    <li className="flex items-center">
+                      <svg className="h-5 w-5 text-green-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                      Support prioritaire
+                    </li>
+                  </ul>
+                </div>
+
+                <div className="mt-6 pt-6 border-t border-gray-200">
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div>
+                      <p className="text-sm text-gray-500">Prochain renouvellement</p>
+                      <p className="font-medium">1 Juillet 2025</p>
+                    </div>
+                    <Button 
+                      variant="outline" 
+                      className="w-full sm:w-auto"
+                      onClick={() => setShowSubscriptionPlans(true)}
+                    >
+                      Changer d'abonnement
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Confidentialité */}
           <Card>
             <CardHeader>
@@ -356,6 +531,13 @@ export default function SettingsPage() {
           </div>
         </div>
       </div>
+      
+      {showSubscriptionPlans && (
+        <SubscriptionPlansModal 
+          onClose={() => setShowSubscriptionPlans(false)} 
+          currentPlan={currentPlan}
+        />
+      )}
     </div>
   )
 }
