@@ -45,7 +45,7 @@ export default function PricingPage() {
   const plans: Plan[] = [
     {
       name: "Mensuel",
-      price: "19 000",
+      price: "5 000",
       period: "FCFA/mois",
       description: "Idéal pour les créateurs indépendants",
       features: [
@@ -59,7 +59,7 @@ export default function PricingPage() {
     },
     {
       name: "Trimestriel",
-      price: "45 000",
+      price: "25 000",
       period: "FCFA/trimestre",
       description: "Parfait pour les petites équipes",
       features: [
@@ -74,7 +74,7 @@ export default function PricingPage() {
     },
     {
       name: "Annuel",
-      price: "150 000",
+      price: "50 000",
       period: "FCFA/an",
       description: "La meilleure valeur pour les entreprises",
       features: [

@@ -22,8 +22,8 @@ const SubscriptionPlansModal = ({ onClose, currentPlan }: SubscriptionPlansModal
   const plans = [
     {
       id: 'basic',
-      name: 'Basique',
-      price: '9 900',
+      name: 'Mensuel',
+      price: '5 000',
       period: 'mois',
       description: 'Parfait pour les petits commerces',
       features: ['Jusqu\'à 50 produits', 'Ventes en ligne', 'Rapports de base'],
@@ -31,7 +31,7 @@ const SubscriptionPlansModal = ({ onClose, currentPlan }: SubscriptionPlansModal
     },
     {
       id: 'pro',
-      name: 'Pro',
+      name: 'Trimestriel',
       price: '25 000',
       period: 'mois',
       description: 'Pour les boutiques en pleine croissance',
@@ -40,8 +40,8 @@ const SubscriptionPlansModal = ({ onClose, currentPlan }: SubscriptionPlansModal
     },
     {
       id: 'enterprise',
-      name: 'Entreprise',
-      price: '49 900',
+      name: 'Annuel',
+      price: '50 000',
       period: 'mois',
       description: 'Solution complète pour les entreprises',
       features: ['Tout inclus dans Pro', 'Multi-utilisateurs', 'API complète', 'Support 24/7'],
