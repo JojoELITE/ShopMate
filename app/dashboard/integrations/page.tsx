@@ -1,8 +1,14 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
@@ -24,7 +30,15 @@ import {
   Zap,
 } from "lucide-react"
 
+type Stats = {
+  integrationsActives: number
+  messagesAutomatises: number
+  campagnesLancees: number
+  tauxReponse: number
+}
+
 export default function IntegrationsPage() {
+  // Etat des intégrations togglables
   const [integrations, setIntegrations] = useState({
     whatsapp: true,
     facebook: true,
@@ -35,11 +49,31 @@ export default function IntegrationsPage() {
     delivery: true,
   })
 
+  // Etat des stats récupérées de l'API
+  const [stats, setStats] = useState<Stats | null>(null)
+
+  // Récupérer les stats à l'initialisation
+  useEffect(() => {
+    async function fetchStats() {
+      try {
+        const res = await fetch("/api/stats")
+        if (!res.ok) throw new Error("Erreur API")
+        const data = await res.json()
+        setStats(data)
+      } catch (error) {
+        console.error("Erreur lors du chargement des stats", error)
+      }
+    }
+    fetchStats()
+  }, [])
+
+  // Liste des intégrations disponibles
   const availableIntegrations = [
     {
       id: "whatsapp",
       name: "WhatsApp Business",
-      description: "Connectez votre compte WhatsApp Business pour automatiser les conversations",
+      description:
+        "Connectez votre compte WhatsApp Business pour automatiser les conversations",
       icon: MessageCircle,
       color: "text-green-600",
       bgColor: "bg-green-100",
@@ -118,37 +152,48 @@ export default function IntegrationsPage() {
     },
   ]
 
+  // Badge affichant le statut de chaque intégration
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "connected":
         return (
-          <Badge className="bg-green-100 text-green-800">
-            <CheckCircle className="w-3 h-3 mr-1" />
+          <Badge className="bg-green-100 text-green-800 flex items-center gap-1">
+            <CheckCircle className="w-3 h-3" />
             Connecté
           </Badge>
         )
       case "error":
         return (
-          <Badge className="bg-red-100 text-red-800">
-            <AlertCircle className="w-3 h-3 mr-1" />
+          <Badge className="bg-red-100 text-red-800 flex items-center gap-1">
+            <AlertCircle className="w-3 h-3" />
             Erreur
           </Badge>
         )
       default:
         return (
-          <Badge variant="outline">
-            <Plus className="w-3 h-3 mr-1" />
+          <Badge variant="outline" className="flex items-center gap-1">
+            <Plus className="w-3 h-3" />
             Disponible
           </Badge>
         )
     }
   }
 
-  const categories = ["Tous", "Communication", "Réseaux sociaux", "Marketing", "Paiement", "Livraison"]
+  // Filtre des catégories disponibles
+  const categories = [
+    "Tous",
+    "Communication",
+    "Réseaux sociaux",
+    "Marketing",
+    "Paiement",
+    "Livraison",
+  ]
   const [selectedCategory, setSelectedCategory] = useState("Tous")
 
+  // Filtrer les intégrations selon la catégorie sélectionnée
   const filteredIntegrations = availableIntegrations.filter(
-    (integration) => selectedCategory === "Tous" || integration.category === selectedCategory,
+    (integration) =>
+      selectedCategory === "Tous" || integration.category === selectedCategory,
   )
 
   return (
@@ -157,12 +202,15 @@ export default function IntegrationsPage() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Intégrations</h1>
-          <p className="text-gray-600 mt-1">Connectez ShopMate à vos outils préférés</p>
+          <p className="text-gray-600 mt-1">
+            Connectez ShopMate à vos outils préférés
+          </p>
         </div>
         <div className="flex items-center space-x-3">
-          <Badge className="bg-blue-100 text-blue-800">
-            <Zap className="w-3 h-3 mr-1" />
-            {availableIntegrations.filter((i) => i.status === "connected").length} connectées
+          <Badge className="bg-blue-100 text-blue-800 flex items-center gap-1">
+            <Zap className="w-3 h-3" />
+            {availableIntegrations.filter((i) => i.status === "connected").length}{" "}
+            connectées
           </Badge>
         </div>
       </div>
@@ -176,38 +224,55 @@ export default function IntegrationsPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {availableIntegrations.filter((i) => i.status === "connected").length}
+              {stats
+                ? stats.integrationsActives.toLocaleString()
+                : "..."}
             </div>
-            <p className="text-xs text-muted-foreground">Sur {availableIntegrations.length} disponibles</p>
+            <p className="text-xs text-muted-foreground">
+              Sur {availableIntegrations.length} disponibles
+            </p>
           </CardContent>
         </Card>
+
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Messages automatisés</CardTitle>
             <MessageCircle className="h-4 w-4 text-blue-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">1,247</div>
+            <div className="text-2xl font-bold">
+              {stats
+                ? stats.messagesAutomatises.toLocaleString()
+                : "..."}
+            </div>
             <p className="text-xs text-muted-foreground">Ce mois</p>
           </CardContent>
         </Card>
+
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Campagnes lancées</CardTitle>
             <Zap className="h-4 w-4 text-purple-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">23</div>
+            <div className="text-2xl font-bold">
+              {stats
+                ? stats.campagnesLancees.toLocaleString()
+                : "..."}
+            </div>
             <p className="text-xs text-muted-foreground">Cette semaine</p>
           </CardContent>
         </Card>
+
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Taux de réponse</CardTitle>
             <CheckCircle className="h-4 w-4 text-green-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">94%</div>
+            <div className="text-2xl font-bold">
+              {stats ? `${stats.tauxReponse.toLocaleString()}%` : "..."}
+            </div>
             <p className="text-xs text-muted-foreground">Réponses automatiques</p>
           </CardContent>
         </Card>
@@ -230,12 +295,19 @@ export default function IntegrationsPage() {
       {/* Integrations Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredIntegrations.map((integration) => (
-          <Card key={integration.id} className="hover:shadow-lg transition-shadow">
+          <Card
+            key={integration.id}
+            className="hover:shadow-lg transition-shadow"
+          >
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
-                  <div className={`w-12 h-12 rounded-lg ${integration.bgColor} flex items-center justify-center`}>
-                    <integration.icon className={`w-6 h-6 ${integration.color}`} />
+                  <div
+                    className={`w-12 h-12 rounded-lg ${integration.bgColor} flex items-center justify-center`}
+                  >
+                    <integration.icon
+                      className={`w-6 h-6 ${integration.color}`}
+                    />
                   </div>
                   <div>
                     <CardTitle className="text-lg">{integration.name}</CardTitle>
@@ -248,7 +320,9 @@ export default function IntegrationsPage() {
               </div>
             </CardHeader>
             <CardContent>
-              <p className="text-gray-600 text-sm mb-4">{integration.description}</p>
+              <p className="text-gray-600 text-sm mb-4">
+                {integration.description}
+              </p>
 
               {integration.status === "connected" ? (
                 <div className="space-y-3">
@@ -281,7 +355,9 @@ export default function IntegrationsPage() {
       <Card>
         <CardHeader>
           <CardTitle>Configuration rapide</CardTitle>
-          <CardDescription>Configurez rapidement vos intégrations principales</CardDescription>
+          <CardDescription>
+            Configurez rapidement vos intégrations principales
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           {/* WhatsApp */}
@@ -296,7 +372,7 @@ export default function IntegrationsPage() {
             <div className="flex items-center space-x-3">
               <Switch checked={integrations.whatsapp} />
               <Button variant="outline" size="sm">
-                Modifier
+                Configurer
               </Button>
             </div>
           </div>
@@ -307,54 +383,32 @@ export default function IntegrationsPage() {
               <Facebook className="w-8 h-8 text-blue-600" />
               <div>
                 <h4 className="font-medium">Facebook Pages</h4>
-                <p className="text-sm text-gray-600">Page: Mon Commerce</p>
+                <p className="text-sm text-gray-600">3 pages connectées</p>
               </div>
             </div>
             <div className="flex items-center space-x-3">
               <Switch checked={integrations.facebook} />
               <Button variant="outline" size="sm">
-                Modifier
+                Configurer
               </Button>
             </div>
           </div>
 
-          {/* Email */}
+          {/* Email Marketing */}
           <div className="flex items-center justify-between p-4 border rounded-lg">
             <div className="flex items-center space-x-3">
               <Mail className="w-8 h-8 text-purple-600" />
               <div>
                 <h4 className="font-medium">Email Marketing</h4>
-                <p className="text-sm text-gray-600">SMTP configuré</p>
+                <p className="text-sm text-gray-600">12 campagnes ce mois</p>
               </div>
             </div>
             <div className="flex items-center space-x-3">
               <Switch checked={integrations.email} />
               <Button variant="outline" size="sm">
-                Modifier
+                Configurer
               </Button>
             </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* API Configuration */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Configuration API</CardTitle>
-          <CardDescription>Intégrez ShopMate à vos applications personnalisées</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="api-endpoint">Point de terminaison API</Label>
-            <Input id="api-endpoint" value="https://api.shopmate.com/v1" readOnly />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="webhook-url">URL Webhook</Label>
-            <Input id="webhook-url" placeholder="https://votre-site.com/webhook" />
-          </div>
-          <div className="flex space-x-2">
-            <Button variant="outline">Tester la connexion</Button>
-            <Button>Sauvegarder</Button>
           </div>
         </CardContent>
       </Card>

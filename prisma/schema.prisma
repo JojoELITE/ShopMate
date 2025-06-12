@@ -1,0 +1,114 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id            String          @id @default(cuid())
+  name          String?
+  username      String?         @unique
+  email         String?         @unique
+  emailVerified DateTime?
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+  firstName     String
+  lastName      String
+  phone         String
+  passwordHash  String
+  businessType  String
+  country       String
+  Authenticator Authenticator[]
+
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  Integration   Integration[]
+  userStats     UserStats?      @relation
+}
+
+model Integration {
+  id      String   @id @default(uuid())
+  userId  String
+  name    String
+  status  String    // ex: "connected", "available", "error"
+
+  user    User     @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+}
+
+model UserStats {
+  id                 String   @id @default(uuid())
+  userId             String   @unique
+  messagesAutomatises Int
+  campagnesLancees    Int
+  tauxReponse        Int      // ex: 94 pour 94%
+
+  user               User     @relation(fields: [userId], references: [id])
+}
+
+model Account {
+  id                    String  @id @default(cuid())
+  userId                String
+  type                  String
+  provider              String
+  providerAccountId     String
+  refresh_token         String? @db.Text
+  access_token          String? @db.Text
+  expires_at            Int?
+  token_type            String?
+  scope                 String?
+  id_token              String? @db.Text
+  session_state         String?
+  refresh_token_expires_in Int?
+  
+  user                  User    @relation(fields: [userId], references: [id])
+
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id])
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Authenticator {
+  credentialID         String  @unique
+  userId               String
+  providerAccountId    String
+  credentialPublicKey  String
+  counter              Int
+  credentialDeviceType String
+  credentialBackedUp   Boolean
+  transports           String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, credentialID])
+}

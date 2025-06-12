@@ -32,13 +32,29 @@ export default function RegisterPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
-
-    // Simulation d'inscription
-    setTimeout(() => {
-      setIsLoading(false)
+  
+    try {
+      const response = await fetch("/api/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      })
+  
+      const data = await response.json()
+  
+      if (!response.ok) {
+        alert(data.error || "Erreur lors de l'inscription.")
+        return
+      }
+  
       router.push("/dashboard")
-    }, 2000)
+    } catch (err) {
+      alert("Erreur serveur")
+    } finally {
+      setIsLoading(false)
+    }
   }
+  
 
   const updateFormData = (field: string, value: string | boolean) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
